@@ -1,0 +1,151 @@
+{
+  "checkpoint": "checkpoints/rgb_full/best.pt",
+  "split": "test",
+  "horizon": 400,
+  "num_episodes": 20,
+  "num_successes": 8,
+  "success_rate": 0.4,
+  "avg_steps_successful": 133.75,
+  "episodes": [
+    {
+      "demo": "demo_175",
+      "success": true,
+      "steps": 118,
+      "gripper_switches": 2,
+      "video": "results/rgb_full/test_rollouts/demo_175.mp4"
+    },
+    {
+      "demo": "demo_139",
+      "success": true,
+      "steps": 131,
+      "gripper_switches": 2,
+      "video": "results/rgb_full/test_rollouts/demo_139.mp4"
+    },
+    {
+      "demo": "demo_183",
+      "success": false,
+      "steps": 400,
+      "gripper_switches": 5,
+      "video": "results/rgb_full/test_rollouts/demo_183.mp4"
+    },
+    {
+      "demo": "demo_41",
+      "success": false,
+      "steps": 400,
+      "gripper_switches": 4,
+      "video": "results/rgb_full/test_rollouts/demo_41.mp4"
+    },
+    {
+      "demo": "demo_110",
+      "success": false,
+      "steps": 400,
+      "gripper_switches": 4,
+      "video": "results/rgb_full/test_rollouts/demo_110.mp4"
+    },
+    {
+      "demo": "demo_22",
+      "success": true,
+      "steps": 138,
+      "gripper_switches": 2,
+      "video": "results/rgb_full/test_rollouts/demo_22.mp4"
+    },
+    {
+      "demo": "demo_19",
+      "success": false,
+      "steps": 400,
+      "gripper_switches": 6,
+      "video": "results/rgb_full/test_rollouts/demo_19.mp4"
+    },
+    {
+      "demo": "demo_163",
+      "success": false,
+      "steps": 400,
+      "gripper_switches": 2,
+      "video": "results/rgb_full/test_rollouts/demo_163.mp4"
+    },
+    {
+      "demo": "demo_64",
+      "success": true,
+      "steps": 115,
+      "gripper_switches": 2,
+      "video": "results/rgb_full/test_rollouts/demo_64.mp4"
+    },
+    {
+      "demo": "demo_47",
+      "success": false,
+      "steps": 400,
+      "gripper_switches": 4,
+      "video": "results/rgb_full/test_rollouts/demo_47.mp4"
+    },
+    {
+      "demo": "demo_113",
+      "success": false,
+      "steps": 400,
+      "gripper_switches": 7,
+      "video": "results/rgb_full/test_rollouts/demo_113.mp4"
+    },
+    {
+      "demo": "demo_140",
+      "success": true,
+      "steps": 114,
+      "gripper_switches": 2,
+      "video": "results/rgb_full/test_rollouts/demo_140.mp4"
+    },
+    {
+      "demo": "demo_181",
+      "success": true,
+      "steps": 129,
+      "gripper_switches": 2,
+      "video": "results/rgb_full/test_rollouts/demo_181.mp4"
+    },
+    {
+      "demo": "demo_14",
+      "success": false,
+      "steps": 400,
+      "gripper_switches": 6,
+      "video": "results/rgb_full/test_rollouts/demo_14.mp4"
+    },
+    {
+      "demo": "demo_141",
+      "success": false,
+      "steps": 400,
+      "gripper_switches": 7,
+      "video": "results/rgb_full/test_rollouts/demo_141.mp4"
+    },
+    {
+      "demo": "demo_194",
+      "success": false,
+      "steps": 400,
+      "gripper_switches": 2,
+      "video": "results/rgb_full/test_rollouts/demo_194.mp4"
+    },
+    {
+      "demo": "demo_36",
+      "success": true,
+      "steps": 131,
+      "gripper_switches": 2,
+      "video": "results/rgb_full/test_rollouts/demo_36.mp4"
+    },
+    {
+      "demo": "demo_97",
+      "success": false,
+      "steps": 400,
+      "gripper_switches": 7,
+      "video": "results/rgb_full/test_rollouts/demo_97.mp4"
+    },
+    {
+      "demo": "demo_193",
+      "success": false,
+      "steps": 400,
+      "gripper_switches": 2,
+      "video": "results/rgb_full/test_rollouts/demo_193.mp4"
+    },
+    {
+      "demo": "demo_136",
+      "success": true,
+      "steps": 194,
+      "gripper_switches": 2,
+      "video": "results/rgb_full/test_rollouts/demo_136.mp4"
+    }
+  ]
+}

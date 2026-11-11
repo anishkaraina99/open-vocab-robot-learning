@@ -1,0 +1,12 @@
+{
+  "run_name": "rgb_full",
+  "epochs": 5,
+  "batch_size": 16,
+  "learning_rate": 0.0001,
+  "seed": 42,
+  "device": "cpu",
+  "pretrained": true,
+  "max_batches": null,
+  "train_samples": 18525,
+  "val_samples": 2337
+}

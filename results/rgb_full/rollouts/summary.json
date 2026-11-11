@@ -1,0 +1,14 @@
+{
+  "checkpoint": "checkpoints/rgb_full/best.pt",
+  "episodes": 1,
+  "horizon": 100,
+  "success_rate": 0.0,
+  "results": [
+    {
+      "episode": 1,
+      "success": false,
+      "steps": 100,
+      "video": "results/rgb_full/rollouts/episode_1.mp4"
+    }
+  ]
+}
