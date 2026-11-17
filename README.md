@@ -25,3 +25,24 @@ pip install numba==0.62.1 llvmlite==0.45.1
 ## Test RoboSuite
 
 python scripts/test_pickplace.py
+
+## Download LIBERO
+
+Create a new Python environment and install LIBERO dependencies:
+
+```bash
+conda create -n libero python=3.8.13
+conda activate libero
+
+git clone https://github.com/Lifelong-Robot-Learning/LIBERO.git
+cd LIBERO
+
+pip install -r requirements.txt
+pip install -e .
+```
+
+Download libero_object dataset:
+
+```bash
+python benchmark_scripts/download_libero_datasets.py --datasets libero_object --use-huggingface
+```
