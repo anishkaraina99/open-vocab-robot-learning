@@ -17,3 +17,7 @@ with h5py.File(path + file, "r") as f:
 
     print("Actions shape:", demo["actions"].shape)
     print("Agentview image shape:", obs["agentview_rgb"].shape)
+
+    print("robot_states:", demo["robot_states"].shape)
+    for key in obs.keys():
+        print(key, obs[key].shape)
