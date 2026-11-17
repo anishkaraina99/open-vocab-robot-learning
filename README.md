@@ -10,6 +10,9 @@ Create a Python 3.10 environment and install dependencies:
 conda create -n openvocab python=3.10
 conda activate openvocab
 pip install -r requirements.txt
+
+cd LIBERO
+python -m pip install -e . --no-deps
 ```
 
 ### Installation Notes
