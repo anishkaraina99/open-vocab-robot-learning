@@ -3,19 +3,20 @@ import os
 import sys
 import json
 import argparse
+from pathlib import Path
 
 import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader
 
-sys.path.insert(0, "src/policies")
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "src/policies"))
 
 from dataset_libero import LIBERODataset
 from lc_model import LanguageConditionedPolicy
 from encode_text_embeddings import encode_instructions
 
 
-DATASET = "/Users/anabellafalk/cs6758/LIBERO/libero/datasets/libero_object"
+DATASET = "data/libero/libero_object"
 
 def get_instruction(task_name):
     """Convert LIBERO task filename into a natural-language instruction."""
@@ -40,6 +41,7 @@ def main():
         default="lc_baseline",
     )
 
+    parser.add_argument("--dataset-dir", default=DATASET)
     args = parser.parse_args()
 
     # Device
@@ -53,7 +55,7 @@ def main():
 
     # Dataset paths
     dataset_dir = (
-        DATASET
+        args.dataset_dir
     )
 
     splits_path = "configs/libero_dataset_splits.json"

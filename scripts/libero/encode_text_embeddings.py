@@ -1,45 +1,21 @@
-
+"""The baseline's frozen, normalized CLIP text embeddings, loaded lazily."""
 import torch
-from transformers import CLIPTokenizer, CLIPTextModelWithProjection
 
-device = torch.device(
-    "mps" if torch.backends.mps.is_available()
-    else "cuda" if torch.cuda.is_available()
-    else "cpu"
-)
-
-model_name = "openai/clip-vit-base-patch32"
-
-tokenizer = CLIPTokenizer.from_pretrained(model_name)
-
-text_encoder = CLIPTextModelWithProjection.from_pretrained(
-    model_name
-).to(device)
-
-text_encoder.eval()
-
-# Freeze CLIP parameters
-for param in text_encoder.parameters():
-    param.requires_grad = False
+MODEL_NAME = 'openai/clip-vit-base-patch32'
+_ENCODERS = {}
 
 
-def encode_instructions(instructions):
-    tokens = tokenizer(
-        instructions,
-        padding=True,
-        truncation=True,
-        return_tensors="pt",
-    ).to(device)
-
-    with torch.no_grad():
-        outputs = text_encoder(**tokens)
-
-        # Projected CLIP text embeddings
-        embeddings = outputs.text_embeds
-
-        # L2 normalization
-        embeddings = embeddings / embeddings.norm(
-            dim=-1, keepdim=True
-        )
-
-    return embeddings
+def encode_instructions(instructions, device=None):
+    from transformers import CLIPTokenizer, CLIPTextModelWithProjection
+    device = str(device or ('cuda' if torch.cuda.is_available() else
+                           'mps' if torch.backends.mps.is_available() else 'cpu'))
+    if device not in _ENCODERS:
+        tokenizer = CLIPTokenizer.from_pretrained(MODEL_NAME)
+        encoder = CLIPTextModelWithProjection.from_pretrained(MODEL_NAME).to(device)
+        encoder.eval().requires_grad_(False)
+        _ENCODERS[device] = (tokenizer, encoder)
+    tokenizer, encoder = _ENCODERS[device]
+    tokens = tokenizer(instructions, padding=True, truncation=True, return_tensors='pt').to(device)
+    with torch.inference_mode():
+        embeddings = encoder(**tokens).text_embeds
+        return (embeddings / embeddings.norm(dim=-1, keepdim=True).clamp_min(1e-12)).clone()

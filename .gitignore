@@ -227,3 +227,10 @@ checkpoints/
 .DS_Store
 __pycache__/
 *.pyc
+
+# Local generated outputs
+.DS_Store
+data/images/
+
+# Isolated SAM environment
+.venv-sam/
