@@ -56,3 +56,37 @@ Download libero_object dataset:
 ```bash
 python benchmark_scripts/download_libero_datasets.py --datasets libero_object --use-huggingface
 ```
+
+## Grounded language-conditioned policies
+
+Compare three behavior-cloning policies on LIBERO-Object using shared instructions,
+demonstration splits, normalization rules, and evaluation metrics:
+
+| Policy | Inputs |
+| --- | --- |
+| RGB + language | RGB, robot state, CLIP instruction embedding |
+| DINO bounding boxes | Baseline inputs plus target/destination box features |
+| DINO + SAM masks | Baseline inputs plus encoded target/destination masks |
+
+Grounding DINO, SAM, and CLIP remain frozen. Train the RGB encoder, action head,
+and mask encoder where present. Both grounded policies retain the RGB input.
+
+Follow the [GPU runbook](docs/SAM_GPU_RUNBOOK.md) for setup, perception caching,
+training and offline evaluation. The SAM rollout evaluator is not included in this branch. Use the
+[Colab Enterprise notebook](notebooks/train_sam_google_cloud.ipynb) for interactive
+execution. Run the small integration check before full-dataset processing.
+
+Use the [PickPlaceCan SAM debugging tools](scripts/sam/README.md) for individual
+image previews and cache checks. Keep PickPlaceCan results separate from LIBERO.
+Recorded LIBERO smoke runs verify software integration only; full training and
+closed-loop simulator validation remain outstanding.
+
+## Regular Google Colab
+
+Use [the regular Colab notebook](notebooks/train_sam_colab.ipynb) at
+https://colab.research.google.com with a hosted NVIDIA GPU runtime. No Google Cloud
+project or runtime template is needed. Build the upload archive with
+`python scripts/sam/package_source.py`, upload it when prompted, and run the
+six-frame smoke test before enabling `RUN_FULL`. Mount Drive to retain results
+and best checkpoints. Datasets and perception caches remain on temporary local
+storage; recreate them after runtime deletion. GPU availability is not guaranteed.
