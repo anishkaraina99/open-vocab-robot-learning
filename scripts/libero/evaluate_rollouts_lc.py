@@ -24,9 +24,11 @@ def instruction_for(task_name):
 def read_test_demos(split_file):
     with open(split_file) as f:
         split = json.load(f)
+
     demos = split.get("test", [])
     if not demos:
         raise ValueError(f"No test demonstrations in {split_file}")
+    
     return [(p.split("/", 1)[0], p.split("/", 1)[1]) for p in demos]
 
 
@@ -41,30 +43,37 @@ def robot_state_from_obs(obs):
         np.asarray(obs["robot0_eef_pos"]).reshape(-1),
         np.asarray(obs["robot0_eef_quat"]).reshape(-1),
     ]).astype(np.float32)
+
     if state.shape != (9,):
         raise ValueError(f"Expected 9D robot state, got {state.shape}")
+    
     return state
 
 
-def image_from_obs(obs, rotate_180=True):
+def image_from_obs(obs):
     image = np.asarray(obs["agentview_image"])
+
     if image.ndim != 3 or image.shape[-1] != 3:
         raise ValueError(f"Expected HxWx3 agentview image, got {image.shape}")
-    if rotate_180:
-        image = np.rot90(image, 2)
+    
+    image = np.rot90(image, 2)      # Rotate simulator images 180 degrees to match training images
     image = np.ascontiguousarray(image)
+
     if image.shape[:2] != (128, 128):
         image = cv2.resize(image, (128, 128), interpolation=cv2.INTER_AREA)
+
     return image
 
 
 def policy_action(model, image, state, language, device):
     image = torch.from_numpy(image).permute(2, 0, 1).float().unsqueeze(0).to(device) / 255.0
     state = torch.from_numpy(state).float().unsqueeze(0).to(device)
+
     with torch.inference_mode():
         action = model(image, state, language)[0].cpu().numpy().astype(np.float32)
     if action.shape != (7,) or not np.isfinite(action).all():
         raise ValueError(f"Invalid policy action: {action}")
+    
     return np.clip(action, -1.0, 1.0)
 
 
@@ -73,16 +82,19 @@ def check_success(env):
         return bool(env.check_success())
     if hasattr(env, "_check_success"):
         return bool(env._check_success())
+    
     raise AttributeError("LIBERO env has no check_success() method")
 
 
 def rollout_one(env, hdf5_path, demo_name, model, language, device,
-                horizon, video_path, rotate_180):
+                horizon, video_path):
     with h5py.File(hdf5_path, "r") as f:
         demo_key = f"data/{demo_name}"
+
         if demo_key not in f:
             raise KeyError(f"Missing {demo_key} in {hdf5_path}")
         demo = f[demo_key]
+
         if "states" not in demo or len(demo["states"]) == 0:
             raise KeyError(f"{demo_key} has no simulator states")
         if "robot_states" not in demo or len(demo["robot_states"]) == 0:
@@ -120,7 +132,7 @@ def rollout_one(env, hdf5_path, demo_name, model, language, device,
     success, steps = False, 0
     try:
         for t in range(horizon):
-            image = image_from_obs(obs, rotate_180)
+            image = image_from_obs(obs)
 
             # At t=0, use the exact precomputed state representation that
             # was supplied to the policy during training. After the first
@@ -136,6 +148,7 @@ def rollout_one(env, hdf5_path, demo_name, model, language, device,
                 writer.write(cv2.cvtColor(image, cv2.COLOR_RGB2BGR))
             obs, reward, done, info = env.step(action.tolist())
             steps = t + 1
+
             if check_success(env):
                 success = True
                 break
@@ -153,7 +166,7 @@ def rollout_one(env, hdf5_path, demo_name, model, language, device,
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--checkpoint", default="checkpoints/lc_baseline/best.pt")
-    parser.add_argument("--dataset-dir", default=os.environ.get("LIBERO_DATASET_DIR", "datasets/libero_object"))
+    parser.add_argument("--dataset-dir", default="LIBERO/libero/datasets/libero_object")
     parser.add_argument("--splits", default="configs/libero_dataset_splits.json")
     parser.add_argument("--task-name", default=None,
                         help="One task from the test split; default is the first sorted task")
@@ -164,8 +177,6 @@ def main():
     parser.add_argument("--horizon", type=int, default=400)
     parser.add_argument("--seed", type=int, default=0)
     parser.add_argument("--no-video", action="store_true")
-    parser.add_argument("--rotate-image-180", action="store_true",
-                        help="Rotate simulator images 180 degrees if needed to match training images")
     parser.add_argument("--output-dir", default="results/lc_baseline/test_rollouts")
     args = parser.parse_args()
 
@@ -186,6 +197,7 @@ def main():
     device = torch.device("cuda" if torch.cuda.is_available() else
                           "mps" if torch.backends.mps.is_available() else "cpu")
     print("Evaluation device:", device)
+
     checkpoint = torch.load(checkpoint_path, map_location=device, weights_only=True)
     model = LanguageConditionedPolicy(9, 512, 7, pretrained=False).to(device)
     model.load_state_dict(checkpoint["model_state_dict"])
@@ -210,7 +222,6 @@ def main():
     task_lookup = {suite.get_task(i).name: suite.get_task(i) for i in range(suite.n_tasks)}
 
     all_results = []
-    rotate_180 = args.rotate_image_180
     for task_name in tasks:
         if task_name not in task_lookup:
             raise KeyError(f"{task_name} is not a task in libero_object")
@@ -234,7 +245,7 @@ def main():
                 video = None if args.no_video else output_dir / task_name / f"{demo_name}.mp4"
                 result = rollout_one(env, hdf5_path, demo_name, model,
                                      language[task_name], device, args.horizon,
-                                     video, rotate_180)
+                                     video)
                 result["task_name"] = task_name
                 all_results.append(result)
                 print(f"    {'SUCCESS' if result['success'] else 'FAILED'} ({result['steps']} steps)", flush=True)
@@ -259,7 +270,7 @@ def main():
         "benchmark": "libero_object", "tasks": per_task,
         "num_episodes": len(all_results), "num_successes": int(successes),
         "success_rate": successes / len(all_results) if all_results else 0.0,
-        "horizon": args.horizon, "image_rotation_180": rotate_180,
+        "horizon": args.horizon,
         "episodes": all_results,
     }
     with open(output_dir / "summary.json", "w") as f:

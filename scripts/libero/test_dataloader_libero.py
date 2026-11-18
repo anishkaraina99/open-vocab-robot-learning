@@ -1,4 +1,6 @@
 import sys
+import numpy as np
+import matplotlib.pyplot as plt
 from torch.utils.data import DataLoader
 
 sys.path.insert(0, "src/policies")
@@ -30,3 +32,13 @@ print("Image:", batch["image"].shape)
 print("Robot state:", batch["robot_state"].shape)
 print("Action:", batch["action"].shape)
 print("Instructions:", batch["instruction"][:3])
+
+
+# Inspect the first image in the batch
+image = batch["image"][0]
+
+plt.figure(figsize=(8, 6))
+plt.imshow(image.permute(1, 2, 0).numpy())
+plt.axis("off")
+plt.title("LIBERO Agent View")
+plt.show()

@@ -89,9 +89,11 @@ class LIBERODataset(Dataset):
         obs = demo["obs"]
 
         # Third-person camera image: (H, W, C)
-        image = torch.from_numpy(
-            np.array(obs["agentview_rgb"][t], copy=True)
-        ).permute(2, 0, 1).float() / 255.0
+        image = np.array(obs["agentview_rgb"][t], copy=True)
+        # Rotate 180 degrees
+        image = np.rot90(image, k=2).copy()
+        # Convert to PyTorch tensor: (C, H, W), normalized to [0, 1]
+        image = torch.from_numpy(image).permute(2, 0, 1).float() / 255.0
 
         # Precomputed robot state
         robot_state = torch.from_numpy(
