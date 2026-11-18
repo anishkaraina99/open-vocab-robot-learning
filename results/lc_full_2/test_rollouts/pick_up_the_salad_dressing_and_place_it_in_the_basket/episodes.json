@@ -1,0 +1,42 @@
+[
+  {
+    "demo": "demo_5",
+    "success": true,
+    "steps": 128,
+    "initial_state_max_abs_error": 0.0022888928651809692,
+    "video": "results/lc_full_2/test_rollouts/pick_up_the_salad_dressing_and_place_it_in_the_basket/demo_5.mp4",
+    "task_name": "pick_up_the_salad_dressing_and_place_it_in_the_basket"
+  },
+  {
+    "demo": "demo_1",
+    "success": false,
+    "steps": 400,
+    "initial_state_max_abs_error": 0.0021782144904136658,
+    "video": "results/lc_full_2/test_rollouts/pick_up_the_salad_dressing_and_place_it_in_the_basket/demo_1.mp4",
+    "task_name": "pick_up_the_salad_dressing_and_place_it_in_the_basket"
+  },
+  {
+    "demo": "demo_47",
+    "success": true,
+    "steps": 119,
+    "initial_state_max_abs_error": 0.002774348482489586,
+    "video": "results/lc_full_2/test_rollouts/pick_up_the_salad_dressing_and_place_it_in_the_basket/demo_47.mp4",
+    "task_name": "pick_up_the_salad_dressing_and_place_it_in_the_basket"
+  },
+  {
+    "demo": "demo_37",
+    "success": false,
+    "steps": 400,
+    "initial_state_max_abs_error": 0.0038883090019226074,
+    "video": "results/lc_full_2/test_rollouts/pick_up_the_salad_dressing_and_place_it_in_the_basket/demo_37.mp4",
+    "task_name": "pick_up_the_salad_dressing_and_place_it_in_the_basket"
+  },
+  {
+    "demo": "demo_41",
+    "success": true,
+    "steps": 208,
+    "initial_state_max_abs_error": 0.002175435423851013,
+    "video": "results/lc_full_2/test_rollouts/pick_up_the_salad_dressing_and_place_it_in_the_basket/demo_41.mp4",
+    "task_name": "pick_up_the_salad_dressing_and_place_it_in_the_basket"
+  }
+]

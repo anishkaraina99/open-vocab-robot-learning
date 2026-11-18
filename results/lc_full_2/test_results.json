@@ -1,0 +1,26 @@
+{
+  "checkpoint": "checkpoints/lc_full_2/best.pt",
+  "test_samples": 7507,
+  "test_mse": 0.0314358815395693,
+  "per_action_mse": [
+    0.017751134932041168,
+    0.01350155845284462,
+    0.03159606084227562,
+    0.00045550931827165186,
+    0.0019038745667785406,
+    0.0013505405513569713,
+    0.15349243581295013
+  ],
+  "tasks": [
+    "pick_up_the_alphabet_soup_and_place_it_in_the_basket",
+    "pick_up_the_bbq_sauce_and_place_it_in_the_basket",
+    "pick_up_the_butter_and_place_it_in_the_basket",
+    "pick_up_the_chocolate_pudding_and_place_it_in_the_basket",
+    "pick_up_the_cream_cheese_and_place_it_in_the_basket",
+    "pick_up_the_ketchup_and_place_it_in_the_basket",
+    "pick_up_the_milk_and_place_it_in_the_basket",
+    "pick_up_the_orange_juice_and_place_it_in_the_basket",
+    "pick_up_the_salad_dressing_and_place_it_in_the_basket",
+    "pick_up_the_tomato_sauce_and_place_it_in_the_basket"
+  ]
+}
