@@ -10,6 +10,13 @@ Create a Python 3.10 environment and install dependencies:
 conda create -n openvocab python=3.10
 conda activate openvocab
 pip install -r requirements.txt
+```
+
+Install LIBERO dependencies in your main environment:
+
+```bash
+cd ..
+git clone https://github.com/Lifelong-Robot-Learning/LIBERO.git
 
 cd LIBERO
 python -m pip install -e . --no-deps
@@ -31,7 +38,7 @@ python scripts/test_pickplace.py
 
 ## Download LIBERO
 
-Create a new Python environment and install LIBERO dependencies:
+Create a separate Python environment and install LIBERO dependencies:
 
 ```bash
 conda create -n libero python=3.8.13
