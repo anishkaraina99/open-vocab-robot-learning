@@ -1,0 +1,62 @@
+{
+  "checkpoint": "checkpoints/lc_full_2/best.pt",
+  "dataset_dir": "/Users/anabellafalk/cs6758/LIBERO/libero/datasets/libero_object",
+  "split": "test",
+  "initial_state_source": "held-out demo states[0]",
+  "benchmark": "libero_object",
+  "tasks": {
+    "pick_up_the_orange_juice_and_place_it_in_the_basket": {
+      "episodes": 5,
+      "successes": 3,
+      "success_rate": 0.6,
+      "average_success_steps": 218.0
+    }
+  },
+  "num_episodes": 5,
+  "num_successes": 3,
+  "success_rate": 0.6,
+  "horizon": 400,
+  "image_rotation_180": true,
+  "episodes": [
+    {
+      "demo": "demo_18",
+      "success": true,
+      "steps": 360,
+      "initial_state_max_abs_error": 0.0021756328642368317,
+      "video": "results/lc_full_2/test_rollouts/pick_up_the_orange_juice_and_place_it_in_the_basket/demo_18.mp4",
+      "task_name": "pick_up_the_orange_juice_and_place_it_in_the_basket"
+    },
+    {
+      "demo": "demo_12",
+      "success": false,
+      "steps": 400,
+      "initial_state_max_abs_error": 0.0021731629967689514,
+      "video": "results/lc_full_2/test_rollouts/pick_up_the_orange_juice_and_place_it_in_the_basket/demo_12.mp4",
+      "task_name": "pick_up_the_orange_juice_and_place_it_in_the_basket"
+    },
+    {
+      "demo": "demo_27",
+      "success": true,
+      "steps": 138,
+      "initial_state_max_abs_error": 0.002176232635974884,
+      "video": "results/lc_full_2/test_rollouts/pick_up_the_orange_juice_and_place_it_in_the_basket/demo_27.mp4",
+      "task_name": "pick_up_the_orange_juice_and_place_it_in_the_basket"
+    },
+    {
+      "demo": "demo_3",
+      "success": false,
+      "steps": 400,
+      "initial_state_max_abs_error": 0.0021728798747062683,
+      "video": "results/lc_full_2/test_rollouts/pick_up_the_orange_juice_and_place_it_in_the_basket/demo_3.mp4",
+      "task_name": "pick_up_the_orange_juice_and_place_it_in_the_basket"
+    },
+    {
+      "demo": "demo_32",
+      "success": true,
+      "steps": 156,
+      "initial_state_max_abs_error": 0.0021743401885032654,
+      "video": "results/lc_full_2/test_rollouts/pick_up_the_orange_juice_and_place_it_in_the_basket/demo_32.mp4",
+      "task_name": "pick_up_the_orange_juice_and_place_it_in_the_basket"
+    }
+  ]
+}
