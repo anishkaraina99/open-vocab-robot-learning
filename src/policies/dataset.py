@@ -60,6 +60,15 @@ class RobotDataset(Dataset):
             "action": action,
         }
 
-    def __del__(self):
+    def close(self):
         if getattr(self, "_file", None) is not None:
             self._file.close()
+            self._file = None
+
+    def __getstate__(self):
+        state = self.__dict__.copy()
+        state["_file"] = None
+        return state
+
+    def __del__(self):
+        self.close()

@@ -4,16 +4,20 @@ import sys
 import json
 import argparse
 import random
+from pathlib import Path
 
 import numpy as np
 import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader
 
-sys.path.insert(0, "src/policies")
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
-from dataset import RobotDataset
-from bc_model import BehaviorCloningPolicy
+from src.policies.sam_model import SAMBehaviorCloningPolicy
+from src.policies.sam_dataset import SAMRobotDataset
+
+from src.policies.dataset import RobotDataset
+from src.policies.bc_model import BehaviorCloningPolicy
 
 
 def main():
@@ -24,7 +28,15 @@ def main():
     parser.add_argument("--workers", type=int, default=0)
     parser.add_argument("--max-batches", type=int, default=None)
     parser.add_argument("--run-name", type=str, default="rgb_baseline")
+    parser.add_argument("--dataset", default="data/processed/can_rgb.hdf5")
+    parser.add_argument("--splits", default="configs/dataset_splits.json")
+    parser.add_argument("--stats", default="configs/robot_state_stats.json")
+    parser.add_argument("--mask-cache", help="Use the SAM policy with a complete mask cache")
+    parser.add_argument("--no-pretrained", action="store_true", help="Offline smoke tests only")
+    parser.add_argument("--device", choices=["cpu", "cuda", "mps"])
     args = parser.parse_args()
+    if args.epochs < 1 or args.batch_size < 1 or (args.max_batches is not None and args.max_batches < 1):
+        parser.error("epochs, batch-size, and max-batches must be positive")
 
     # Reproducibility
     seed = 42
@@ -34,7 +46,8 @@ def main():
 
     # Device
     device = torch.device(
-        "mps" if torch.backends.mps.is_available() else "cpu"
+        args.device or ("cuda" if torch.cuda.is_available() else
+                        "mps" if torch.backends.mps.is_available() else "cpu")
     )
     print("Training device:", device)
 
@@ -46,15 +59,19 @@ def main():
     os.makedirs(results_dir, exist_ok=True)
 
     # Load datasets
-    train_dataset = RobotDataset(
-        "data/processed/can_rgb.hdf5",
-        "configs/dataset_splits.json",
+    dataset_cls = SAMRobotDataset if args.mask_cache else RobotDataset
+    dataset_kwargs = {"cache_path": args.mask_cache} if args.mask_cache else {}
+    train_dataset = dataset_cls(
+        args.dataset,
+        args.splits,
+        **dataset_kwargs,
         split="train",
     )
 
-    val_dataset = RobotDataset(
-        "data/processed/can_rgb.hdf5",
-        "configs/dataset_splits.json",
+    val_dataset = dataset_cls(
+        args.dataset,
+        args.splits,
+        **dataset_kwargs,
         split="val",
     )
 
@@ -76,11 +93,16 @@ def main():
     print("Validation samples:", len(val_dataset))
 
     # Load normalization statistics
-    with open("configs/robot_state_stats.json", "r") as f:
+    with open(args.stats, "r") as f:
         stats = json.load(f)
 
     # Initialize pretrained model
-    model = BehaviorCloningPolicy(pretrained=True).to(device)
+    model_cls = SAMBehaviorCloningPolicy if args.mask_cache else BehaviorCloningPolicy
+    example = train_dataset[0]
+    train_dataset.close()  # Workers must open their own HDF5 handles.
+    model = model_cls(robot_state_dim=example["robot_state"].numel(),
+                      action_dim=example["action"].numel(),
+                      pretrained=not args.no_pretrained).to(device)
 
     model.set_state_normalization(
         stats["mean"],
@@ -102,7 +124,15 @@ def main():
         "learning_rate": args.lr,
         "seed": seed,
         "device": str(device),
-        "pretrained": True,
+        "pretrained": not args.no_pretrained,
+        "policy_type": "sam" if args.mask_cache else "rgb",
+        "dataset": args.dataset,
+        "splits": args.splits,
+        "stats": args.stats,
+        "mask_cache": args.mask_cache,
+        "language_dim": 0,
+        "robot_state_dim": example["robot_state"].numel(),
+        "action_dim": example["action"].numel(),
         "max_batches": args.max_batches,
         "train_samples": len(train_dataset),
         "val_samples": len(val_dataset),
@@ -133,7 +163,10 @@ def main():
             states = batch["robot_state"].to(device)
             actions = batch["action"].to(device)
 
-            predicted = model(images, states)
+            predicted = (
+                model(images, states, batch["masks"].to(device))
+                if args.mask_cache else model(images, states)
+            )
             loss = criterion(predicted, actions)
 
             optimizer.zero_grad()
@@ -163,7 +196,10 @@ def main():
                 states = batch["robot_state"].to(device)
                 actions = batch["action"].to(device)
 
-                predicted = model(images, states)
+                predicted = (
+                    model(images, states, batch["masks"].to(device))
+                    if args.mask_cache else model(images, states)
+                )
                 loss = criterion(predicted, actions)
 
                 n = images.shape[0]
