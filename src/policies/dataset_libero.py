@@ -7,6 +7,11 @@ import h5py
 
 from torch.utils.data import Dataset
 
+try:
+    from .libero_images import policy_image
+except ImportError:  # Baseline scripts import this module directly.
+    from libero_images import policy_image
+
 
 class LIBERODataset(Dataset):
     def __init__(
@@ -91,7 +96,7 @@ class LIBERODataset(Dataset):
         # Third-person camera image: (H, W, C)
         image = np.array(obs["agentview_rgb"][t], copy=True)
         # Rotate 180 degrees
-        image = np.rot90(image, k=2).copy()
+        image = policy_image(image)
         # Convert to PyTorch tensor: (C, H, W), normalized to [0, 1]
         image = torch.from_numpy(image).permute(2, 0, 1).float() / 255.0
 
